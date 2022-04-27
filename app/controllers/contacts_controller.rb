@@ -10,6 +10,7 @@ class ContactsController < ApplicationController
 
   def new
     @contact = Contact.new
+    @contact.build_address
   end
 
   def create
@@ -25,11 +26,11 @@ class ContactsController < ApplicationController
   end
 
   def update
-    if @contact.save
+    if @contact.update(contact_params)
       redirect_to contacts_path
     else
-      reder :new, notice: "Não foi possível atualizar/editar o contato"
-    end 
+      reder :new, notice: "Não foi possível atualizar o contato"
+    end     
   end
 
   def destroy
@@ -37,14 +38,15 @@ class ContactsController < ApplicationController
     redirect_to contacts_path
   end
 
-  private
-
   def set_contact
     @contact = Contact.find(params[:id])
   end
 
   def contact_params
-    params.require(:contact).permit(:name)
+    params.require(:contact).permit(:name,
+    address_attributes: [:street, :number, :neighborhood],# permitindo os atributos aninhados
+    phones_attributes: [:number],
+    )
   end
 
 
